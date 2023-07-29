@@ -26,31 +26,91 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   final List<Platform> _platforms = [];
 
   // Add Platforms: Add onMount method
+  @override // Add lines from here...
+  void onMount() {
+    super.onMount();
+
+    var currentX = (gameRef.size.x.floor() / 2).toDouble() - 50;
+
+    var currentY =
+        gameRef.size.y - (_rand.nextInt(gameRef.size.y.floor()) / 3) - 50;
+
+    for (var i = 0; i < 9; i++) {
+      if (i != 0) {
+        currentX = _generateNextX(100);
+        currentY = _generateNextY();
+      }
+      _platforms.add(
+        _semiRandomPlatform(
+          Vector2(
+            currentX,
+            currentY,
+          ),
+        ),
+      );
+
+      add(_platforms[i]);
+    }
+  }
 
   // Add Platforms: Add update method
-  @override
-  void update(double dt) {
-    final topOfLowestPlatform =
-        _platforms.first.position.y + _tallestPlatformHeight;
+ void update(double dt) {
+   final topOfLowestPlatform =
+       _platforms.first.position.y + _tallestPlatformHeight;
 
-    final screenBottom = gameRef.player.position.y +
-        (gameRef.size.x / 2) +
-        gameRef.screenBufferSpace;
-    if (topOfLowestPlatform > screenBottom) {
-      var newPlatY = _generateNextY();
-      var newPlatX = _generateNextX(100);
-      final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
-      add(nextPlat);
+   final screenBottom = gameRef.player.position.y +
+       (gameRef.size.x / 2) +
+       gameRef.screenBufferSpace;
 
-      _platforms.add(nextPlat);
-      gameRef.gameManager.increaseScore();
+   if (topOfLowestPlatform > screenBottom) {
+     var newPlatY = _generateNextY();
+     var newPlatX = _generateNextX(100);
+     final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
+     add(nextPlat);
 
-      _cleanupPlatforms();
-      _maybeAddEnemy(); // Add this line
-    }
+     _platforms.add(nextPlat);
 
-    super.update(dt);
-  }
+     gameRef.gameManager.increaseScore();
+
+     _cleanupPlatforms();
+     // Losing the game: Add call to _maybeAddEnemy()
+     _maybeAddEnemy();
+     // Powerups: Add call to _maybeAddPowerup();
+   }
+
+   super.update(dt);
+   if (gameManager.isGameOver) {                            
+     return;
+   }
+   if (gameManager.isPlaying) {
+     checkLevelUp();
+
+     final Rect worldBounds = Rect.fromLTRB(
+       0,
+       camera.position.y - screenBufferSpace,
+       camera.gameSize.x,
+       camera.position.y + _world.size.y,
+     );
+     camera.worldBounds = worldBounds;
+     if (player.isMovingDown) {
+       camera.worldBounds = worldBounds;
+     }
+
+     var isInTopHalfOfScreen = player.position.y <= (_world.size.y / 2);
+     if (!player.isMovingDown && isInTopHalfOfScreen) {
+       camera.followComponent(player);
+     }
+
+                                   
+     if (player.position.y >
+         camera.position.y +
+             _world.size.y +
+             player.size.y +
+             screenBufferSpace) {
+       onLose();
+     }                                                                 
+   }              
+ }         
 
   final Map<String, bool> specialPlatforms = {
     'spring': true, // level 1
@@ -134,7 +194,10 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   }
 
   // Add platforms: Add _semiRandomPlatform method
-
+  Platform _semiRandomPlatform(Vector2 position) {
+    // Add lines from here...
+    return NormalPlatform(position: position);
+  }
   // Losing the game: Add enemy code
   final List<EnemyPlatform> _enemies = []; // Add lines from here...
   void _maybeAddEnemy() {

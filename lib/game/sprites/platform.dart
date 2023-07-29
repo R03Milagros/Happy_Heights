@@ -89,5 +89,24 @@ class NormalPlatform extends Platform<NormalPlatformState> {
 // More on Platforms: Add SpringBoard Platform class
 
 // Losing the game: Add EnemyPlatformState Enum
+enum EnemyPlatformState { only } // Add lines from here...
 
 // Losing the game: Add EnemyPlatform class
+class EnemyPlatform extends Platform<EnemyPlatformState> {
+  EnemyPlatform({super.position});
+
+  @override
+  Future<void>? onLoad() async {
+    var randBool = Random().nextBool();
+    var enemySprite = randBool ? 'enemy_trash_can' : 'enemy_error';
+
+    sprites = <EnemyPlatformState, Sprite>{
+      EnemyPlatformState.only:
+          await gameRef.loadSprite('game/$enemySprite.png'),
+    };
+
+    current = EnemyPlatformState.only;
+
+    return super.onLoad();
+  }
+}

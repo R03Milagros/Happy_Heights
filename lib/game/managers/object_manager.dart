@@ -28,6 +28,29 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   // Add Platforms: Add onMount method
 
   // Add Platforms: Add update method
+  @override
+  void update(double dt) {
+    final topOfLowestPlatform =
+        _platforms.first.position.y + _tallestPlatformHeight;
+
+    final screenBottom = gameRef.player.position.y +
+        (gameRef.size.x / 2) +
+        gameRef.screenBufferSpace;
+    if (topOfLowestPlatform > screenBottom) {
+      var newPlatY = _generateNextY();
+      var newPlatX = _generateNextX(100);
+      final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
+      add(nextPlat);
+
+      _platforms.add(nextPlat);
+      gameRef.gameManager.increaseScore();
+
+      _cleanupPlatforms();
+      _maybeAddEnemy(); // Add this line
+    }
+
+    super.update(dt);
+  }
 
   final Map<String, bool> specialPlatforms = {
     'spring': true, // level 1
@@ -50,6 +73,17 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   void enableLevelSpecialty(int level) {
     // More on Platforms: Add switch statement to enable SpringBoard for
     // level 1 and BrokenPlatform for level 2
+    switch (level) {
+      case 1:
+        enableSpecialty('spring');
+        break;
+      case 2:
+        enableSpecialty('broken');
+        break;
+      case 5: // Add lines from here...
+        enableSpecialty('enemy');
+        break; // ... to here.
+    }
   }
 
   void resetSpecialties() {
@@ -102,6 +136,30 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   // Add platforms: Add _semiRandomPlatform method
 
   // Losing the game: Add enemy code
+  final List<EnemyPlatform> _enemies = []; // Add lines from here...
+  void _maybeAddEnemy() {
+    if (specialPlatforms['enemy'] != true) {
+      return;
+    }
+    if (probGen.generateWithProbability(20)) {
+      var enemy = EnemyPlatform(
+        position: Vector2(_generateNextX(100), _generateNextY()),
+      );
+      add(enemy);
+      _enemies.add(enemy);
+      _cleanupEnemies();
+    }
+  }
 
+  void _cleanupEnemies() {
+    final screenBottom = gameRef.player.position.y +
+        (gameRef.size.x / 2) +
+        gameRef.screenBufferSpace;
+
+    while (_enemies.isNotEmpty && _enemies.first.position.y > screenBottom) {
+      remove(_enemies.first);
+      _enemies.removeAt(0);
+    }
+  }
   // Powerups: Add Power-Up code
 }

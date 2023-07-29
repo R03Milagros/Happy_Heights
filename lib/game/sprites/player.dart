@@ -101,7 +101,34 @@ class Player extends SpriteGroupComponent<PlayerState>
   // Powerups: Add isWearingHat getter
 
   // Core gameplay: Override onCollision callback
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other is EnemyPlatform) {
+      // Add lines from here...
+      gameRef.onLose();
+      return;
+    } // ... to here.
 
+    bool isCollidingVertically =
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+
+    if (isMovingDown && isCollidingVertically) {
+      current = PlayerState.center;
+      if (other is NormalPlatform) {
+        jump();
+        return;
+      } else if (other is SpringBoard) {
+        jump(specialJumpSpeed: jumpSpeed * 2);
+        return;
+      } else if (other is BrokenPlatform &&
+          other.current == BrokenPlatformState.cracked) {
+        jump();
+        other.breakPlatform();
+        return;
+      }
+    }
+  }
   // Core gameplay: Add a jump method
 
   void _removePowerupAfterTime(int ms) {

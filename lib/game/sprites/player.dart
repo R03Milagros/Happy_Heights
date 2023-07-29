@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
 // Core gameplay: Import sprites.dart
+import 'sprites.dart';
 
 enum PlayerState {
   left,
@@ -41,31 +42,44 @@ class Player extends SpriteGroupComponent<PlayerState>
   Character character;
   double jumpSpeed;
   // Core gameplay: Add _gravity property
+  final double _gravity = 9;
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
 
     // Core gameplay: Add circle hitbox to Dash
-
+    await add(CircleHitbox());
     // Add a Player to the game: loadCharacterSprites
+    await _loadCharacterSprites();
     // Add a Player to the game: Default Dash onLoad to center state
+    current = PlayerState.center;
   }
 
   @override
   void update(double dt) {
     // Add a Player to the game: Add game state check
+    if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
+    _velocity.x = _hAxisInput * jumpSpeed;
 
     // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
 
     final double dashHorizontalCenter = size.x / 2;
 
     // Add a Player to the game: Add infinite side boundaries logic
+    if (position.x < dashHorizontalCenter) {
+      position.x = gameRef.size.x - (dashHorizontalCenter);
+    }
+    if (position.x > gameRef.size.x - (dashHorizontalCenter)) {
+      position.x = dashHorizontalCenter;
+    }
 
     // Core gameplay: Add gravity
+    _velocity.y += _gravity;
 
     // Add a Player to the game: Calculate Dash's current position based on
     // her velocity over elapsed time since last update cycle
+    position += _velocity * dt;
     super.update(dt);
   }
 
@@ -104,12 +118,6 @@ class Player extends SpriteGroupComponent<PlayerState>
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other is EnemyPlatform) {
-      // Add lines from here...
-      gameRef.onLose();
-      return;
-    } // ... to here.
-
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
@@ -118,18 +126,14 @@ class Player extends SpriteGroupComponent<PlayerState>
       if (other is NormalPlatform) {
         jump();
         return;
-      } else if (other is SpringBoard) {
-        jump(specialJumpSpeed: jumpSpeed * 2);
-        return;
-      } else if (other is BrokenPlatform &&
-          other.current == BrokenPlatformState.cracked) {
-        jump();
-        other.breakPlatform();
-        return;
       }
     }
   }
+
   // Core gameplay: Add a jump method
+  void jump({double? specialJumpSpeed}) {
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
+  }
 
   void _removePowerupAfterTime(int ms) {
     Future.delayed(Duration(milliseconds: ms), () {

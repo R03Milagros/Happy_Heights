@@ -59,6 +59,7 @@ class DoodleDash extends FlameGame
         camera.position.y + _world.size.y,
       );
       camera.worldBounds = worldBounds;
+
       if (player.isMovingDown) {
         camera.worldBounds = worldBounds;
       }
@@ -92,6 +93,15 @@ class DoodleDash extends FlameGame
     if (children.contains(objectManager)) objectManager.removeFromParent();
 
     levelManager.reset();
+    player.reset();
+    camera.worldBounds = Rect.fromLTRB(
+      0,
+      -_world.size.y,
+      camera.gameSize.x,
+      _world.size.y + screenBufferSpace,
+    );
+    camera.followComponent(player);
+
     player.resetPosition();
     // Core gameplay: Reset player & camera boundaries
 
@@ -145,6 +155,7 @@ class DoodleDash extends FlameGame
       objectManager.configure(levelManager.level, levelManager.difficulty);
 
       // Core gameplay: Call setJumpSpeed
+      player.setJumpSpeed(levelManager.jumpSpeed);
     }
   }
 }

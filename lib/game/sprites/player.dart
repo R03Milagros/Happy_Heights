@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
 // Core gameplay: Import sprites.dart
+import 'sprites.dart';
 
 enum PlayerState {
   left,
@@ -41,6 +42,7 @@ class Player extends SpriteGroupComponent<PlayerState>
   Character character;
   double jumpSpeed;
   // Core gameplay: Add _gravity property
+  final double _gravity = 9;
 
   @override
   Future<void> onLoad() async {
@@ -48,7 +50,11 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // Core gameplay: Add circle hitbox to Dash
 
+    await add(CircleHitbox());
+    // Add a Player to the game: loadCharacterSprites
     await _loadCharacterSprites();
+    // Add a Player to the game: Default Dash onLoad to center state
+
     current = PlayerState.center;
   }
 
@@ -71,11 +77,12 @@ class Player extends SpriteGroupComponent<PlayerState>
     }
 
     // Core gameplay: Add gravity
-    position += _velocity * dt;
-    super.update(dt);
+
+    _velocity.y += _gravity;
 
     // Add a Player to the game: Calculate Dash's current position based on
     // her velocity over elapsed time since last update cycle
+    position += _velocity * dt;
     super.update(dt);
   }
 
@@ -132,7 +139,6 @@ class Player extends SpriteGroupComponent<PlayerState>
       gameRef.onLose();
       return;
     } // ... to here.
-
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
@@ -152,7 +158,11 @@ class Player extends SpriteGroupComponent<PlayerState>
       }
     }
   }
+
   // Core gameplay: Add a jump method
+  void jump({double? specialJumpSpeed}) {
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
+  }
 
   void _removePowerupAfterTime(int ms) {
     Future.delayed(Duration(milliseconds: ms), () {

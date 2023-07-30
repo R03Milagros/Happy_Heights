@@ -49,10 +49,12 @@ class Player extends SpriteGroupComponent<PlayerState>
     await super.onLoad();
 
     // Core gameplay: Add circle hitbox to Dash
+
     await add(CircleHitbox());
     // Add a Player to the game: loadCharacterSprites
     await _loadCharacterSprites();
     // Add a Player to the game: Default Dash onLoad to center state
+
     current = PlayerState.center;
   }
 
@@ -60,9 +62,9 @@ class Player extends SpriteGroupComponent<PlayerState>
   void update(double dt) {
     // Add a Player to the game: Add game state check
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
-    _velocity.x = _hAxisInput * jumpSpeed;
 
     // Add a Player to the game: Add calcualtion for Dash's horizontal velocity
+    _velocity.x = _hAxisInput * jumpSpeed;
 
     final double dashHorizontalCenter = size.x / 2;
 
@@ -75,6 +77,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     }
 
     // Core gameplay: Add gravity
+
     _velocity.y += _gravity;
 
     // Add a Player to the game: Calculate Dash's current position based on
@@ -88,20 +91,33 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
 
     // Add a Player to the game: Add keypress logic
+    if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      moveLeft();
+    }
+
+    if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+      moveRight();
+    }
+    // During development, it's useful to "cheat"
+    if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+      // jump();
+    }
 
     return true;
   }
 
   void moveLeft() {
     _hAxisInput = 0;
-
     // Add a Player to the game: Add logic for moving left
+    current = PlayerState.left;
+    _hAxisInput += movingLeftInput;
   }
 
   void moveRight() {
     _hAxisInput = 0;
-
     // Add a Player to the game: Add logic for moving right
+    current = PlayerState.right;
+    _hAxisInput += movingRightInput;
   }
 
   void resetDirection() {

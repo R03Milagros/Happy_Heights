@@ -46,17 +46,17 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   // Getter booleanos para dar poderes a Dash
   bool get hasPowerup =>
-    current == PlayerState.rocket ||
-    current == PlayerState.nooglerLeft ||
-    current == PlayerState.nooglerRight ||
-    current == PlayerState.nooglerCenter;
+      current == PlayerState.rocket ||
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   bool get isInvincible => current == PlayerState.rocket;
 
   bool get isWearingHat =>
-    current == PlayerState.nooglerLeft ||
-    current == PlayerState.nooglerRight ||
-    current == PlayerState.nooglerCenter;
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   @override
   Future<void> onLoad() async {
@@ -70,8 +70,6 @@ class Player extends SpriteGroupComponent<PlayerState>
     // Add a Player to the game: Default Dash onLoad to center state
     current = PlayerState.center;
   }
-
-  
 
   @override
   void update(double dt) {
@@ -120,8 +118,6 @@ class Player extends SpriteGroupComponent<PlayerState>
     return true;
   }
 
-  
-
   void moveLeft() {
     _hAxisInput = 0;
     if (isWearingHat) {
@@ -134,12 +130,12 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   void moveRight() {
     _hAxisInput = 0;
-   if (isWearingHat) {
-    current = PlayerState.nooglerRight;
-   } else if (!hasPowerup) {
-    current = PlayerState.right;
-   }
-   _hAxisInput += movingRightInput;
+    if (isWearingHat) {
+      current = PlayerState.nooglerRight;
+    } else if (!hasPowerup) {
+      current = PlayerState.right;
+    }
+    _hAxisInput += movingRightInput;
   }
 
   void resetDirection() {

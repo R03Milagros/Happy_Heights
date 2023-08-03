@@ -84,20 +84,6 @@ class DoodleDash extends FlameGame
   }
 
   @override
-  void lifecycleStateChange(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        FlameAudio.bgm.pause();
-        break;
-      case AppLifecycleState.resumed:
-        FlameAudio.bgm.resume();
-        break;
-    }
-  }
-
-  @override
   Color backgroundColor() {
     return const Color.fromARGB(255, 241, 247, 249);
   }

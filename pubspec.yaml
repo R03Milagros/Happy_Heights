@@ -35,8 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  flame: 1.7.3
-  google_fonts: ^5.0.0
+  flame: ^1.8.1
+  flame_audio: ^2.0.4
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +64,12 @@ flutter:
   assets:
     - assets/images/game/
     - assets/images/game/background/
+    - assets/audio/music/dying.mp3
+    - assets/audio/music/gorro_power.wav
+    - assets/audio/music/breaking_platform.mp3
+    - assets/audio/music/normal_jump.wav
+    - assets/audio/music/rocket_power.wav
+    - assets/audio/music/spring_jump.wav
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

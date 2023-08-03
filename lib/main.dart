@@ -4,7 +4,6 @@
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
 import 'game/util/util.dart';
@@ -27,7 +26,17 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(
         colorScheme: darkColorScheme,
-        textTheme: GoogleFonts.audiowideTextTheme(ThemeData.dark().textTheme),
+        textTheme: TextTheme(
+          headline1: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          bodyText1: TextStyle(
+            fontSize: 16,
+            color: Colors.white70,
+          )
+        ),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Doodle Dash'),

@@ -10,6 +10,8 @@ import './world.dart';
 import 'managers/managers.dart';
 import 'sprites/sprites.dart';
 
+import 'package:flame_audio/flame_audio.dart';
+
 enum Character { dash, sparky }
 
 class DoodleDash extends FlameGame
@@ -141,6 +143,7 @@ class DoodleDash extends FlameGame
   void onLose() {
     // Add lines from here...
     gameManager.state = GameState.gameOver;
+    FlameAudio.play('music/dying.mp3');
     player.removeFromParent();
     overlays.add('gameOverOverlay');
   }

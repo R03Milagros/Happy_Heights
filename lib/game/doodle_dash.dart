@@ -10,6 +10,8 @@ import './world.dart';
 import 'managers/managers.dart';
 import 'sprites/sprites.dart';
 
+import 'package:flame_audio/flame_audio.dart';
+
 enum Character { dash, sparky }
 
 class DoodleDash extends FlameGame
@@ -82,6 +84,20 @@ class DoodleDash extends FlameGame
   }
 
   @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        FlameAudio.bgm.pause();
+        break;
+      case AppLifecycleState.resumed:
+        FlameAudio.bgm.resume();
+        break;
+    }
+  }
+
+  @override
   Color backgroundColor() {
     return const Color.fromARGB(255, 241, 247, 249);
   }
@@ -141,6 +157,7 @@ class DoodleDash extends FlameGame
   void onLose() {
     // Add lines from here...
     gameManager.state = GameState.gameOver;
+    FlameAudio.play('music/dying.mp3');
     player.removeFromParent();
     overlays.add('gameOverOverlay');
   }

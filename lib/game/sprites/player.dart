@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
@@ -152,6 +153,8 @@ class Player extends SpriteGroupComponent<PlayerState>
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+
+  
     if (other is EnemyPlatform && !isInvincible) {
       // Add lines from here...
       gameRef.onLose();
@@ -163,25 +166,30 @@ class Player extends SpriteGroupComponent<PlayerState>
     if (isMovingDown && isCollidingVertically) {
       current = PlayerState.center;
       if (other is NormalPlatform) {
+        _reproduceSound('music/normal_jump.wav', 1.0);
         jump();
         return;
       } else if (other is SpringBoard) {
+        _reproduceSound('music/spring_jump.wav', 1.0);
         jump(specialJumpSpeed: jumpSpeed * 2);
         return;
       } else if (other is BrokenPlatform &&
           other.current == BrokenPlatformState.cracked) {
-        jump();
+        _reproduceSound('music/breaking_platform.mp3', 1.0);
         other.breakPlatform();
+        jump();
         return;
       }
     }
 
     if (!hasPowerup && other is Rocket) {
+      _reproduceSound('music/rocket_power.wav', 1.0);
       current = PlayerState.rocket;
       other.removeFromParent();
       jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       return;
     } else if (!hasPowerup && other is NooglerHat) {
+      _reproduceSound('music/gorro_power.wav', 1.0);
       if (current == PlayerState.center) current = PlayerState.nooglerCenter;
       if (current == PlayerState.left) current = PlayerState.nooglerLeft;
       if (current == PlayerState.right) current = PlayerState.nooglerRight;
@@ -190,6 +198,10 @@ class Player extends SpriteGroupComponent<PlayerState>
       jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       return;
     }
+  }
+
+  void _reproduceSound(String pathSound, double volume) {
+    FlameAudio.play(pathSound, volume: volume);
   }
 
   // Core gameplay: Add a jump method
